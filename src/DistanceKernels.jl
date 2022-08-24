@@ -1,7 +1,5 @@
 module DistanceKernels
 
-using Pkg; Pkg.activate(".")
-
 using Profile, PProf
 using Statistics
 using ChainRules
@@ -10,11 +8,7 @@ using CUDA
 using CUDAKernels
 using KernelAbstractions
 using KernelGradients
-using Test
 using Tullio
-
-using Flux, MLDatasets
-using Flux: onehotbatch
 
 newaxis = [CartesianIndex()]
 

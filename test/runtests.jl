@@ -1,7 +1,5 @@
 ##
 
-using Pkg; Pkg.activate(".")
-
 using BenchmarkTools
 using Profile, PProf
 using Statistics
@@ -9,14 +7,17 @@ using CUDA
 using CUDAKernels
 using Test
 using Zygote
+using DistanceKernels
+
+DK = DistanceKernels
 
 print(CUDA.functional())
 print(Threads.nthreads())
 
 
-include("DistanceKernels.jl"); DK = DistanceKernels
+# include("DistanceKernels.jl"); DK = DistanceKernels
 
-mode = identity;
+mode = cu;
 
 xs = randn(Float32, 700, 900) |> mode;
 ws = randn(Float32, 700, 900) |> mode;
