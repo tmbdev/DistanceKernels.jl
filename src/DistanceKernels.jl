@@ -112,17 +112,17 @@ ChainRules.rrule(::typeof(q_distance), w, x; q=2.0f0) = q_distance_pb(w, x; q=q)
 # Weighted p-Distance
 #######################################################################
 
-function weighted_distance_zygote(w::AAAF, s::AAAF, x::AAAF; p::Int64=2)
+function weighted_distance_zygote(w::AAAF, s::AAAF, x::AAAF; p::Float32=2.0f0)
     @tullio result[i, j] := abs(s[k, i] * (w[k, i] - x[k, j]))^p
     return result
 end
 
-function weighted_distance(w::AAAF, s::AAAF, x::AAAF; p::Int64=2)
+function weighted_distance(w::AAAF, s::AAAF, x::AAAF; p::Float32=2.0f0)
     @tullio grad=false result[i, j] := abs(s[k, i] * (w[k, i] - x[k, j]))^p
     return result
 end
 
-function weighted_distance_pb(w::AAAF, s::AAAF, x::AAAF; p::Int64=2)
+function weighted_distance_pb(w::AAAF, s::AAAF, x::AAAF; p::Float32=2.0f0)
     result = weighted_distance(w, s, x; p=p)
     return result, (Δresult) -> begin
         @assert size(result) == size(Δresult) "$size(result) != $size(Δresult)"
@@ -133,7 +133,7 @@ function weighted_distance_pb(w::AAAF, s::AAAF, x::AAAF; p::Int64=2)
     end
 end
 
-ChainRules.rrule(::typeof(weighted_distance), w, s, x; p=2) = weighted_distance_pb(w, s, x; p=p)
+ChainRules.rrule(::typeof(weighted_distance), w, s, x; p=2.0f0) = weighted_distance_pb(w, s, x; p=p)
 
 #######################################################################
 # mp distance
