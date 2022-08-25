@@ -83,6 +83,32 @@ end
 ChainRules.rrule(::typeof(p_distance), w, x; p=2) = p_distance_pb(w, x; p=p)
 
 #######################################################################
+# q-Distance (same as p-distance, but allowing for real exponents)
+#######################################################################
+
+function q_distance_zygote(w::AAAF, x::AAAF; q::Float32=2.0f0)
+    @tullio result[i, j] := abs(w[k, i] - x[k, j])^q
+    return result
+end
+
+function q_distance(w::AAAF, x::AAAF; q::Float32=2.0f0)
+    @tullio grad=false result[i, j] := abs(w[k, i] - x[k, j])^q
+    return result
+end
+
+function q_distance_pb(w::AAAF, x::AAAF; q::Float32=2.0f0)
+    result = q_distance(w, x; q=q)
+    return result, (Δresult) -> begin
+        @assert size(result) == size(Δresult) "$size(result) != $size(Δresult)"
+        @tullio grad=false Δw[k, i] := + Δresult[i, j] * q * abs(w[k, i] - x[k, j])^(q-1) * sign(w[k, i] - x[k, j])
+        @tullio grad=false Δx[k, j] := - Δresult[i, j] * q * abs(w[k, i] - x[k, j])^(q-1) * sign(w[k, i] - x[k, j])
+        return (ChainRules.NoTangent(), Δw, Δx)
+    end
+end
+
+ChainRules.rrule(::typeof(q_distance), w, x; q=2.0f0) = q_distance_pb(w, x; q=q)
+
+#######################################################################
 # Weighted p-Distance
 #######################################################################
 

@@ -51,6 +51,17 @@ xd, yd = Zygote.pullback(DK.p_distance, xs, ys)[2](zs);
 @test xz ≈ xd
 @test yz ≈ yd
 
+println("q_distance")
+
+@btime CUDA.@sync DK.q_distance(xs, ys);
+@btime CUDA.@sync Zygote.pullback(DK.q_distance_zygote, xs, ys)[2](zs);
+@btime CUDA.@sync Zygote.pullback(DK.q_distance, xs, ys)[2](zs);
+
+xz, yz = Zygote.pullback((xs, ys) -> DK.q_distance_zygote(xs, ys; q=3.2f0), xs, ys)[2](zs);
+xd, yd = Zygote.pullback((xs, ys) -> DK.q_distance(xs, ys; q=3.2f0), xs, ys)[2](zs);
+@test xz ≈ xd
+@test yz ≈ yd
+
 println("weighted_distance")
 
 @btime CUDA.@sync DK.weighted_distance(xs, ws, ys);
